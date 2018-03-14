@@ -273,16 +273,17 @@ void	ft_des(t_data *data)
 	line = ft_strnew(0);
 	ret = 1;
 	write(1, "enter des key in hex: ", 22);
-	while (ret > 0)
-	{
-		ret = read(0, buf, BUFF_SIZE);
-		if (*buf == '\n')
-			break ;
-		if (ret == -1)
-			return ;
-		buf[ret] = '\0';
-		line = ft_strjoin(line, buf);
-	}
+	// while (ret > 0)
+	// {
+	// 	ret = read(0, buf, BUFF_SIZE);
+	// 	if (*buf == '\n')
+	// 		break ;
+	// 	if (ret == -1)
+	// 		return ;
+	// 	buf[ret] = '\0';
+	// 	line = ft_strjoin(line, buf);
+	// }
+	line = getpass(line);
 	if (ft_strlen(line) * 4 != 64)
 		while(ft_strlen(line) * 4 != 64)
 			line = ft_strjoin(line, "0");
