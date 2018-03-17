@@ -85,7 +85,7 @@ char *ft_add_zero(char *line, t_ssl *ssl)
 	ret = ft_strnew(size);
 	while (--size >= 0 )
 		ret[size] = '0';
-	line = ft_strjoin(line, ret);
+	line = ft_strjoin2(line, ret, 1);
 	ssl->string_size = ft_strlen(line);
 	free (ret);
 	return (line);
@@ -129,7 +129,7 @@ void	ft_encode(t_ssl *ssl)
 		buffer[ret] = '\0';
 		tmp = *buffer;
 		buffer = ft_covert_2(tmp, buffer);
-		line = ft_strjoin(line, buffer);		
+		line = ft_strjoin2(line, buffer, 1);		
 	}
 	free (buffer);
 	if ((ft_strlen(line) % 24))

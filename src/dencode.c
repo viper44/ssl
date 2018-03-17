@@ -59,7 +59,7 @@ void	ft_pre_decode(int i, t_ssl *ssl)
 		i /= 2;
 		n--; 
 	}
-	ssl->ret_str = ft_strjoin(ssl->ret_str, str);
+	ssl->ret_str = ft_strjoin2(ssl->ret_str, str, 1);
 	//printf("ssl->ret_str =  = %s\n", ssl->ret_str);
 }
 
@@ -82,7 +82,7 @@ void	ft_pieceof(char *str, t_ssl *ssl)
 	//printf("razmer = %d\n", ssl->string_size);
 	if (ft_strlen(ssl->ret_str) % 8 != 0)
 		while(ft_strlen(ssl->ret_str) % 8 != 0)
-			ssl->ret_str = ft_strjoin(ssl->ret_str, "0");
+			ssl->ret_str = ft_strjoin2(ssl->ret_str, "0", 1);
 	//printf("ssl->ret_str after %s\n", ssl->ret_str);
 	ft_almost_done(ssl);
 }
@@ -95,7 +95,6 @@ void	ft_decode(t_ssl *ssl)
 
 	ret = 1;
 	ssl->ret_str = ft_strnew(0);
-	
 	line = ft_strnew(0);
 	buffer = ft_strnew(BUFF_SIZE);
 	while(ret)

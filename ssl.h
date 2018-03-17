@@ -37,13 +37,15 @@ typedef struct s_ssl
 	int			arr_size;
 	int			byte_counter;
 	int			counter;
+	int			pad_count;
 	char		*ret_str;
 	char		*maj_key;
+	char		*mid_key;
 	char		*half_l;
 	char		*half_r;
 	char		**sub_keys;
+	char		**message;
 }			   t_ssl;
-
 
 char			*itoa_base(long long int value, int base);
 int				ft_reveres_itoa(char *str, int base);

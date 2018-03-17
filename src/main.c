@@ -12,11 +12,23 @@
 
 #include "ssl.h"
 
+static char *ft_covert_2(int tmp)
+{
+	char 	*str;
+	int 	n;
 
-
-
-// 00000000001111111100000010100100110000101110000101010000
-// 111000001000001000101010110000100011001010011000
+	n = 8;
+	str = ft_strnew(n);
+	n -= 1;
+	while (n + 1)
+	{
+		str[n] = tmp % 2 + 48;
+		tmp /= 2;
+		n--;
+	}
+	//free(buffer);
+	return (str);
+}
 
 char *comp_permutation(char *line)
 {
@@ -30,7 +42,6 @@ char *comp_permutation(char *line)
 		ret[i] = line[g_comp_perm_tab[i] - 1];
 		i++;
 	}
-	printf("ret2 === %s\n", ret);
 	free(line);
 	return (ret);
 }
@@ -41,15 +52,12 @@ char *permutation(char *str)
 	int	i;
 
 	i = 0;
-	printf("str == %s\n", str);
 	ret = ft_strnew(56);
 	while (i < 56)
 	{
-		printf("g_perm_t ==   %d\n", g_perm_tab[i] - 1);
 		ret[i] = str[g_perm_tab[i] - 1];
 		i++;
 	}
-	ft_printf("ret == %s\n", ret);
 	free(str);
 	return (ret);
 }
@@ -59,9 +67,7 @@ char	*ft_conv(char c)
 	char *table[16];
 	int i;
 
-	//printf("elem = %c\n", c);
 	i = c - 48;
-	//printf("i == %d\n", i);
 	table[0] = "0000";
 	table[1] = "0001";
 	table[2] = "0010";
@@ -80,13 +86,8 @@ char	*ft_conv(char c)
 	table[15] = "1111";
 	if (i > 10)
 		i = i - 7;
-	//printf("i = %d small string == %s\n", i, table[i]);
 	return (table[i]);
 }
-
-
-// 110100001011111111010001100000001101000010111000110100001011001011010000101101011101000110000010000010100000000000000000
-// 11010000101111111101000110000000110100001011100011010000101100101101000010110101110100011000001000001010
 
 void	ft_split_key(char *key, t_ssl *ssl)
 {
@@ -104,36 +105,119 @@ void	ft_split_key(char *key, t_ssl *ssl)
 	}
 	while(i < 56)
 		ssl->half_r[n++]  = key[i++];
-	printf("key == %59s\n", key);
-	printf("half_l == %-56s\n", ssl->half_l);
-	printf("half_r == %56s\n", ssl->half_r);
 }
 
-void	ft_rot_one_or_two(t_ssl *ssl, int i, char tmp)
+char	*rotation(char *str, int i)
 {
-	char	*ret_l;
-	char	*ret_r;
+	char	*ret;
+	int		n;
+	int		m;
 	char	*tmp;
 
+	n = 0;
+	m = 0;
 	tmp = ft_strnew(i);
-	ret_l = ft_strnew(26);
-	ret_r = ft_strnew(26);
+	ret = ft_strnew(28);
+	while (n < i)
+	{
+		tmp[n] = str[n];
+		n++;
+	}
+	while (n < 28)
+		ret[m++] = str[n++];
+	n = 0;
+	while (n < i)
+		ret[m++] = tmp[n++];
+	//free(str);
+	free(tmp);
+	return(ret);
+}
+// 0000000000111111110000001010
+// 00000000011111111000000100
+void	ft_rot_one_or_two(int round, t_ssl *ssl, int i)
+{
+	char	*ret;
 
+	ssl->half_l = rotation(ssl->half_l, i);
+	//printf("half-l after rot = %s\n", ssl->half_l);
+	ssl->half_r = rotation(ssl->half_r, i);
+	//printf("half-r after rot = %s\n", ssl->half_r);
+	ret = ft_strjoin2(ssl->half_l, ssl->half_r, 3);
+	//printf("ret = %s\n", ret);
+	ssl->sub_keys[round] = comp_permutation(ret);
+	printf("key #%.2d = %s\n",round, ssl->sub_keys[round]);
 }
 
 void	ft_shift_cycle(t_ssl *ssl)
 {
 	int 	round;
 	char 	*number;
-	char	tmp;
 
-	tmp = '\0';
 	number = "1122222212222221";
 	ssl->sub_keys = (char**)malloc(sizeof(char) * 17);
 	ssl->sub_keys[16] = NULL;
 	round = 0;
 	while(round < 16)
-		ft_rot_one_or_two(ssl, number[round++] - 48, tmp);
+	{
+		ft_rot_one_or_two(round, ssl, number[round] - 48);
+		round++;
+	}
+}
+
+char	*ft_add_padding(char *line)
+{
+	int 			n;
+	int				size;
+	unsigned char	ret;
+	int				i;
+
+	i = 0;
+	size = ft_strlen(line);
+	n = 0;
+	if (size < 64)
+		while (size < 64)
+		{
+			size += 8;
+			n++;
+		}
+	else if (size == 64)
+		n = 8;
+	while (i < n)
+	{
+		ret = n;
+		line = ft_strjoin2(line, ft_covert_2(ret), 1);
+		i++;
+	}
+	return (line);
+}
+
+void	ft_message(t_ssl *ssl)
+{
+	char 			*buffer;
+	char 			*line;
+	int				ret;
+	unsigned char 	tmp;
+
+	ret = 1;
+	line = ft_strnew(0);
+	buffer = ft_strnew(BUFF_SIZE);
+	while(ret)
+	{	
+		ret = read(0, buffer, BUFF_SIZE);
+		if (ret == 0)
+			break ;
+		if (ret == -1)
+			return ;
+		buffer[ret] = '\0';
+		tmp = *buffer;
+		buffer = ft_covert_2(tmp);
+		line = ft_strjoin2(line, buffer, 1);		
+	}
+	if (ft_strlen(line) <= 64)
+		line = ft_add_padding(line);
+	ssl->message = NULL;
+	printf("message = %s\n", line);
+	//ssl->message = permutation(line);
 }
 
 void	ft_des(t_ssl *ssl)
@@ -153,14 +237,14 @@ void	ft_des(t_ssl *ssl)
 	line = getpass(line);
 	if (ft_strlen(line) * 4 != 64)
 		while(ft_strlen(line) * 4 != 64)
-			line = ft_strjoin(line, "0");
+			line = ft_strjoin2(line, "0", 1);
 	while(line[i])
-		ssl->maj_key = ft_strjoin(ssl->maj_key, ft_conv(line[i++]));
+		ssl->maj_key = ft_strjoin2(ssl->maj_key, ft_conv(line[i++]), 1);
 	free(line);
-	ssl->maj_key = permutation(ssl->maj_key);
-	ft_split_key(ssl->maj_key, ssl);
+	ssl->mid_key = permutation(ssl->maj_key);
+	ft_split_key(ssl->mid_key, ssl);
 	ft_shift_cycle(ssl);
-	//line = comp_permutation(line);
+	ft_message(ssl);
 }
 
 int	ft_valid_command(const char *s)
