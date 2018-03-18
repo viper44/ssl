@@ -107,8 +107,8 @@ void	ft_decode(t_ssl *ssl)
 		if (ret == -1)
 			return ;
 		buffer[ret] = '\0';
-		line = ft_strjoin(line, buffer);
+		line = ft_strjoin2(line, buffer, 1);
 	}
-	ft_printf("line = %s\n", line);
+	printf("line = %s\n", line);
 	ft_pieceof(line, ssl);
 }

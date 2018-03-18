@@ -17,12 +17,12 @@ SRC = $(addprefix $(SRCDIR), $(SRCNAMES))
 INC = ./
 OBJECTS = ./objects/
 BUILDOBJS = $(addprefix $(OBJECTS), $(SRCNAMES:.c=.o))
-LIBDIR = ./Libft/
+LIBDIR = ./libft/
 PRINTFDIR = ./printf/
 PRINTF = ./printf/libftprintf.a
 PRINTFINC = ./printf/
-LIBFT = ./Libft/libft.a
-LIBINC = ./Libft/
+LIBFT = ./libft/libft.a
+LIBINC = ./libft/
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 

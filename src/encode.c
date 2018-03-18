@@ -62,12 +62,10 @@ void	ft_pre_encode(char *line, t_ssl *ssl)
 
 char *ft_add_zero(char *line, t_ssl *ssl)
 {
-	int 	i;
 	int 	size;
 	char 	*ret;
 	int		size_line;
 
-	i = 0;
 	size_line = ft_strlen(line);
 	//ft_h_m_p(ft_strlen(line), ssl);
 	ssl->counter = size_line / 6;
@@ -134,6 +132,6 @@ void	ft_encode(t_ssl *ssl)
 	free (buffer);
 	if ((ft_strlen(line) % 24))
 		line = ft_add_zero(line, ssl);
-	ft_printf("line = %s\n", line);
+	printf("line = %s\n", line);
 	ft_pre_encode(line, ssl);
 }
