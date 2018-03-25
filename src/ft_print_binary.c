@@ -24,7 +24,7 @@ void	ft_print_binary(char *ret, t_ssl *ssl)
 	{
 		str = ft_strsub(ret, i, 8);
 		c = ft_reveres_itoa(str, 128);
-		//printf("%d\n", c);
+		//	printf("%d\n", c);
 		write (1, &c, 1);
 		i += 8;
 		ssl->string_size--;
